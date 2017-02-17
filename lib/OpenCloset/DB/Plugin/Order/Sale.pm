@@ -4,9 +4,13 @@ package OpenCloset::DB::Plugin::Order::Sale;
 
 # ABSTRACT: OpenCloset::DB::Plugin::Order::Sale
 
-our $VERSION = '0.000';
+use strict;
+use warnings;
 
-package OpenCloset::Schema::Result::Order;
+our $VERSION = '0.001';
+
+package
+    OpenCloset::Schema::Result::Order; # to prevent module indexing
 
 use strict;
 use warnings;
