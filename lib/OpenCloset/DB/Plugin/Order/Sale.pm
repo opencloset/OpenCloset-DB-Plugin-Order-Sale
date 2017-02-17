@@ -11,11 +11,20 @@ package OpenCloset::Schema::Result::Order;
 use strict;
 use warnings;
 
+use DateTime;
 use List::MoreUtils;
 
 use OpenCloset::Constants::Status;
 
 =method sale_multi_times_rental
+
+    my $sale_price = $order->sale_multi_times_rental( \@order_details );
+    my $sale_price = $order->sale_multi_times_rental( \@order_details, DateTime->now );
+    my $sale_price = $order->sale_multi_times_rental( \@order_details, $order->create_date );
+
+L<GH #790|https://github.com/opencloset/opencloset/issues/790> 3회째 대여자 부터 대여자의 부담을 줄이기 위해 비용을 할인함
+
+A set of example codes are below:
 
     my @order_details = (
         {
@@ -71,12 +80,12 @@ use OpenCloset::Constants::Status;
         );
     }
 
-L<GH #790|https://github.com/opencloset/opencloset/issues/790> 3회째 대여자 부터 대여자의 부담을 줄이기 위해 비용을 할인함
-
 =cut
 
 sub sale_multi_times_rental {
-    my ( $self, $order_details ) = @_;
+    my ( $self, $order_details, $dt ) = @_;
+
+    $dt ||= DateTime->now;
 
     my %sale_price = (
         before                => 0,
@@ -93,12 +102,14 @@ sub sale_multi_times_rental {
     #
     my $rented_without_coupon = 0;
     {
-        my $orders                         = $self->user->orders;
+        my $orders = $self->user->orders;
+        my $dtf    = $self->result_source->schema->storage->datetime_parser;
         my $rented_without_coupon_order_rs = $orders->search(
             {
-                status_id => $OpenCloset::Constants::Status::RETURNED,
-                parent_id => undef,
-                -and      => [
+                status_id   => $OpenCloset::Constants::Status::RETURNED,
+                parent_id   => undef,
+                return_date => { "<" => $dtf->format_datetime($dt) },
+                -and        => [
                     -or => [
                         {
                             "coupon.id"     => { "!=" => undef },
