@@ -7,7 +7,7 @@ package OpenCloset::DB::Plugin::Order::Sale;
 use strict;
 use warnings;
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 package
     OpenCloset::Schema::Result::Order; # to prevent module indexing
