@@ -89,7 +89,8 @@ A set of example codes are below:
 sub sale_multi_times_rental {
     my ( $self, $order_details, $dt ) = @_;
 
-    $dt ||= DateTime->now;
+    my $tz = $self->create_date->time_zone;
+    $dt ||= DateTime->now(time_zone => $tz);
 
     my %sale_price = (
         before                => 0,
