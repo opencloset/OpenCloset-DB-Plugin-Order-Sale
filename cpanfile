@@ -23,6 +23,10 @@ on 'configure' => sub {
   requires "perl" => "5.008";
 };
 
+on 'configure' => sub {
+  suggests "JSON::PP" => "2.27300";
+};
+
 on 'develop' => sub {
   requires "Dist::Zilla" => "5";
   requires "Dist::Zilla::Plugin::Encoding" => "0";
